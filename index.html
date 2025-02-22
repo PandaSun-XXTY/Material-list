@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>材料清单</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>材料清单</h1>
+        <div class="input-section">
+            <input type="text" id="itemName" placeholder="输入物品名称">
+            <input type="number" id="itemQuantity" placeholder="所需数量" min="1">
+            <button id="addItem">添加</button>
+        </div>
+        <div class="actions">
+            <button id="exportList">导出清单</button>
+            <input type="file" id="importList" accept=".json" style="display: none;">
+            <button id="importButton">导入清单</button>
+        </div>
+        <ul id="itemList"></ul>
+        <div class="calculator">
+            <h2>计算器</h2>
+            <input type="text" id="calcInput" placeholder="输入计算表达式">
+            <button id="calcButton">计算</button>
+            <p id="calcResult"></p>
+        </div>
+        <div class="converter">
+            <h2>快捷转换</h2>
+            <div class="converter-inputs">
+                <input type="number" id="boxInput" placeholder="盒" min="0">
+                <input type="number" id="groupInput" placeholder="组" min="0">
+                <input type="number" id="itemInput" placeholder="个" min="0">
+                <button id="insertButton">插入</button>
+            </div>
+            <p id="convertResult"></p>
+        </div>
+        <div id="tooltip" class="tooltip"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
