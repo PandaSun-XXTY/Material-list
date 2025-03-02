@@ -67,17 +67,37 @@ function addItemToList(name, quantity, owned = 0) {
     const groups = Math.floor((quantity % 1728) / 64);
     const items = quantity % 64;
     const li = document.createElement('li');
-    li.innerHTML = `
-        <span>${name} - 所需数量: ${quantity} (${boxes}盒${groups}组${items}个)</span>
+
+    // 创建主要显示内容
+    const mainContent = document.createElement('span');
+    mainContent.textContent = `${name} - ${quantity}`;
+    mainContent.classList.add('main-content');
+
+    // 创建悬停提示内容
+    const tooltipContent = document.createElement('span');
+    tooltipContent.textContent = `${boxes}盒${groups}组${items}个`;
+    tooltipContent.classList.add('tooltip-content');
+
+    // 将内容添加到列表项
+    li.appendChild(mainContent);
+    li.appendChild(tooltipContent);
+
+    // 添加输入框和删除按钮
+    li.innerHTML += `
         <input type="number" min="0" value="${owned}" placeholder="已拥有" oninput="updateStatus(this)">
         <button onclick="removeItem(this)">删除</button>
     `;
+
     itemList.appendChild(li);
     updateStatus(li.querySelector('input'));
 
     // 添加悬停事件监听器
-    li.querySelector('input').addEventListener('mouseover', showTooltip);
-    li.querySelector('input').addEventListener('mouseout', hideTooltip);
+    li.addEventListener('mouseover', function () {
+        tooltipContent.style.display = 'inline';
+    });
+    li.addEventListener('mouseout', function () {
+        tooltipContent.style.display = 'none';
+    });
 }
 
 function removeItem(button) {
@@ -87,7 +107,7 @@ function removeItem(button) {
 
 function updateStatus(input) {
     const li = input.parentElement;
-    const required = parseInt(li.querySelector('span').textContent.split('所需数量: ')[1]);
+    const required = parseInt(li.querySelector('span').textContent.split(' - ')[1]);
     const owned = parseInt(input.value) || 0;
     if (owned >= required) {
         li.classList.add('completed');
@@ -102,8 +122,8 @@ function sortList() {
     const itemList = document.getElementById('itemList');
     const items = Array.from(itemList.children);
     items.sort((a, b) => {
-        const aQuantity = parseInt(a.querySelector('span').textContent.split('所需数量: ')[1]);
-        const bQuantity = parseInt(b.querySelector('span').textContent.split('所需数量: ')[1]);
+        const aQuantity = parseInt(a.querySelector('span').textContent.split(' - ')[1]);
+        const bQuantity = parseInt(b.querySelector('span').textContent.split(' - ')[1]);
         return aQuantity - bQuantity;
     });
     items.forEach(item => itemList.appendChild(item));
@@ -133,40 +153,11 @@ document.getElementById('boxInput').addEventListener('input', convert);
 document.getElementById('groupInput').addEventListener('input', convert);
 document.getElementById('itemInput').addEventListener('input', convert);
 
-document.getElementById('insertButton').addEventListener('click', function () {
-    const total = document.getElementById('convertResult').textContent.split(' ')[2];
-    document.getElementById('itemQuantity').value = total;
-});
-
-// 显示拆分结果的工具提示
-function showTooltip(event) {
-    const quantity = parseInt(event.target.value) || 0;
-    const boxes = Math.floor(quantity / 1728);
-    const groups = Math.floor((quantity % 1728) / 64);
-    const items = quantity % 64;
-    const tooltip = document.getElementById('tooltip');
-    tooltip.textContent = `${boxes} 盒 ${groups} 组 ${items} 个`;
-    tooltip.style.display = 'block';
-    tooltip.style.left = `${event.pageX + 10}px`;
-    tooltip.style.top = `${event.pageY + 10}px`;
-}
-
-function hideTooltip() {
-    const tooltip = document.getElementById('tooltip');
-    tooltip.style.display = 'none';
-}
-
-document.getElementById('itemList').addEventListener('mouseover', function (event) {
-    if (event.target.tagName === 'INPUT' && event.target.type === 'number') {
-        showTooltip(event);
+// 插入转换结果到所需数量
+document.getElementById('insertConvertedValue').addEventListener('click', function () {
+    const convertResult = document.getElementById('convertResult').textContent;
+    const totalItems = convertResult.match(/\d+/); // 提取转换结果中的数字
+    if (totalItems) {
+        document.getElementById('itemQuantity').value = totalItems[0];
     }
 });
-
-document.getElementById('itemList').addEventListener('mouseout', function (event) {
-    if (event.target.tagName === 'INPUT' && event.target.type === 'number') {
-        hideTooltip(event);
-    }
-});
-
-document.getElementById('itemQuantity').addEventListener('mouseover', showTooltip);
-document.getElementById('itemQuantity').addEventListener('mouseout', hideTooltip);
